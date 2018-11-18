@@ -10,7 +10,19 @@ class WWVB {
     WWVB();
     void tick(int b);
   private:
-    int _timeFrame[60];
+    int timeFrame[60];
+    int bitIndex = 0;
+    int isAligned = LOW;
+    int previousBit;
+    void checkPosition();
+    void triggerDecode();
+    void decodeMinutes();
+    void decodeHours();
+    void decodeDayOfYear();
+    void decodeYear();
+    void decodeLeapYearIndicator();
+    void decodeLeapSecondWarning();
+    void decodeDst();
 };
 
 #endif
