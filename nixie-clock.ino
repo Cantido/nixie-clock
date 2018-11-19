@@ -88,7 +88,7 @@ void handleRising() {
 
 
 void handleBit(int b) {
-  wwvb.tick(b);
+  wwvb.nextBit(b);
 }
 
 void loop() {

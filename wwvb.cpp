@@ -9,7 +9,7 @@ int WWVB::isTimeSet() {
   return isAligned;
 }
 
-void WWVB::tick(int b) {
+void WWVB::nextBit(int b) {
   switch(b) {
     case LOW:
     case HIGH:

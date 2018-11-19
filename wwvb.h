@@ -8,7 +8,8 @@
 class WWVB {
   public:
     WWVB();
-    void tick(int b);
+    void nextBit(int b);
+    
     int isTimeSet();
     int getHour();
     int getMinute();
