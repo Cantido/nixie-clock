@@ -5,6 +5,10 @@ WWVB::WWVB() {
   
 }
 
+int WWVB::isTimeSet() {
+  return isAligned;
+}
+
 void WWVB::tick(int b) {
   switch(b) {
     case LOW:
@@ -79,7 +83,7 @@ void WWVB::triggerDecode() {
   }
 }
 
-void WWVB::decodeMinutes() {
+int WWVB::decodeMinutes() {
   int minutes =
     timeFrame[1] * 40 +
     timeFrame[2] * 20 +
@@ -88,12 +92,23 @@ void WWVB::decodeMinutes() {
     timeFrame[6] * 4 +
     timeFrame[7] * 2 +
     timeFrame[8] * 1;
-  Serial.print("Decoded frame: ");
-  Serial.print(minutes);
-  Serial.println(" minutes");
+
+  return minutes;
 }
 
-void WWVB::decodeHours() {
+int WWVB::getHour() {
+  return decodeHours();
+}
+
+int WWVB::getMinute() {
+  return decodeMinutes();
+}
+
+int WWVB::getSecond() {
+  return bitIndex;
+}
+
+int WWVB::decodeHours() {
   int hours =
     timeFrame[12] * 20 +
     timeFrame[13] * 10 +
@@ -101,12 +116,11 @@ void WWVB::decodeHours() {
     timeFrame[16] * 4 +
     timeFrame[17] * 2 +
     timeFrame[18] * 1;
-  Serial.print("Decoded frame: ");
-  Serial.print(hours);
-  Serial.println(" hours");
+
+  return hours;
 }
 
-void WWVB::decodeDayOfYear() {
+int WWVB::decodeDayOfYear() {
   int day =
     timeFrame[22] * 200 +
     timeFrame[23] * 100 +
@@ -118,12 +132,11 @@ void WWVB::decodeDayOfYear() {
     timeFrame[31] * 4 +
     timeFrame[32] * 2 +
     timeFrame[33] * 1;
-  Serial.print("Decoded frame: ");
-  Serial.print(day);
-  Serial.println(" day of year");
+
+  return day;
 }
 
-void WWVB::decodeYear() {
+int WWVB::decodeYear() {
   int year =
     timeFrame[45] * 80 +
     timeFrame[46] * 40 +
@@ -133,24 +146,26 @@ void WWVB::decodeYear() {
     timeFrame[51] * 4 +
     timeFrame[52] * 2 +
     timeFrame[53] * 1;
-  Serial.print("Decoded frame: year 20");
-  Serial.println(year);
+
+  return 2000 + year;
 }
 
-void WWVB::decodeLeapYearIndicator() {
+int WWVB::decodeLeapYearIndicator() {
   if(timeFrame[55] == HIGH) {
     Serial.println("Leap year: YES");
   } else {
     Serial.println("Leap year: NO");
   }
+  return timeFrame[55];
 }
 
-void WWVB::decodeLeapSecondWarning() {
+int WWVB::decodeLeapSecondWarning() {
   if(timeFrame[56] == HIGH) {
     Serial.println("Leap second warning: YES");
   } else {
     Serial.println("Leap second warning: NO");
   }
+  return timeFrame[56];
 }
 
 void WWVB::decodeDst() {

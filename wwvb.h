@@ -9,6 +9,10 @@ class WWVB {
   public:
     WWVB();
     void tick(int b);
+    int isTimeSet();
+    int getHour();
+    int getMinute();
+    int getSecond();
   private:
     int timeFrame[60];
     int bitIndex = 0;
@@ -16,12 +20,12 @@ class WWVB {
     int previousBit;
     void checkPosition();
     void triggerDecode();
-    void decodeMinutes();
-    void decodeHours();
-    void decodeDayOfYear();
-    void decodeYear();
-    void decodeLeapYearIndicator();
-    void decodeLeapSecondWarning();
+    int decodeMinutes();
+    int decodeHours();
+    int decodeDayOfYear();
+    int decodeYear();
+    int decodeLeapYearIndicator();
+    int decodeLeapSecondWarning();
     void decodeDst();
 };
 
