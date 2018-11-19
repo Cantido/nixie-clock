@@ -27,18 +27,6 @@ void setup() {
 
 }
 
-int decodePulseLength(int len) {
-  if(len >= 50 && len < 350) {
-    return LOW;
-  } else if(len >= 350 && len < 650) {
-    return HIGH;
-  } else if(len >= 650 && len < 950) {
-    return REFERENCE_BIT;
-  } else {
-    return -1;
-  }
-}
-
 int timerStart = 0;
 int previousBit = -0;
 
@@ -70,37 +58,15 @@ void printTime() {
   }
 }
 
-
-int handleFalling() {
-  int pulseLength = millis() - timerStart;
-  int decodedBit = decodePulseLength(pulseLength);
-  Serial.print(decodedBit);
-  Serial.print(" (");
-  Serial.print(pulseLength);
-  Serial.print("ms)");
-  printTime();
-  return decodedBit;
-}
-
-void handleRising() {
-  timerStart = millis();
-}
-
-
-void handleBit(int b) {
-  wwvb.nextBit(b);
-}
-
 void loop() {
   int sig = analogRead(PWM_IN);
   int pwmSig = (sig > 350);
 
   if(previousLevel == LOW && pwmSig == HIGH) {
-    handleRising();
-  } else if(previousLevel == HIGH && pwmSig == LOW && timerStart != 0) {
-    int decodedBit = handleFalling();
-    handleBit(decodedBit);
-    timerStart = 0;
+    wwvb.tick();
+  } else if(previousLevel == HIGH && pwmSig == LOW) {
+    wwvb.tock();
+    printTime();
   }
 
   previousLevel = pwmSig;

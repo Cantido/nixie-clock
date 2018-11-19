@@ -17,7 +17,6 @@ void WWVB::nextBit(int b) {
       break;
     case REFERENCE_BIT:
       if(previousBit == REFERENCE_BIT) {
-        Serial.println("Two reference bits in a row, setting index to 0");
          timeFrame[60] = {0};
          bitIndex = 0;
       } else {
@@ -36,10 +35,37 @@ void WWVB::nextBit(int b) {
   }
 }
 
+void WWVB::tick() {
+  timerStart = millis();
+}
+
+void WWVB::tock() {
+  if(timerStart == 0) {
+    return;
+  }
+  int pulseLength = millis() - timerStart;
+  int decodedBit = decodePulseLength(pulseLength);
+
+  nextBit(decodedBit);
+}
+
+int WWVB::decodePulseLength(int len) {
+  if(len >= 50 && len < 350) {
+    return LOW;
+  } else if(len >= 350 && len < 650) {
+    return HIGH;
+  } else if(len >= 650 && len < 950) {
+    return REFERENCE_BIT;
+  } else {
+    return -1;
+  }
+}
+
 void WWVB::checkPosition() {
   switch(bitIndex) {
     case 0:
-      Serial.println("Starting 60-second time frame");
+      // We are only "aligned" if we have been aligned for the entire minute
+      isAligned = HIGH;
       break;
     case 9:
     case 19:
@@ -47,12 +73,9 @@ void WWVB::checkPosition() {
     case 39:
     case 49:
     case 59:
-      Serial.println("Position marker, we are correctly-positioned");
-      isAligned = HIGH;
+      // If we became aligned during the minute, we aren't totally aligned yet.
       break;
     default:
-      Serial.print("Position marker, we are not aligned. Current bit index is ");
-      Serial.println(bitIndex);
       isAligned = LOW;
   }
 }
@@ -151,31 +174,21 @@ int WWVB::decodeYear() {
 }
 
 int WWVB::decodeLeapYearIndicator() {
-  if(timeFrame[55] == HIGH) {
-    Serial.println("Leap year: YES");
-  } else {
-    Serial.println("Leap year: NO");
-  }
   return timeFrame[55];
 }
 
 int WWVB::decodeLeapSecondWarning() {
-  if(timeFrame[56] == HIGH) {
-    Serial.println("Leap second warning: YES");
-  } else {
-    Serial.println("Leap second warning: NO");
-  }
   return timeFrame[56];
 }
 
-void WWVB::decodeDst() {
+int WWVB::decodeDst() {
   if(timeFrame[57] == LOW && timeFrame[58] == LOW) {
-    Serial.println("Standard time is in effect.");
+    return ST_ACTIVE;
   } else if (timeFrame[57] == HIGH && timeFrame[58] == HIGH) {
-    Serial.println("Daylight savings time is in effect.");
+    return DST_ACTIVE;
   } else if (timeFrame[57] == HIGH && timeFrame[58] == LOW) {
-    Serial.println("The time is changing from ST to DST today");
+    return ST_TO_DST;
   } else if (timeFrame[57] == LOW && timeFrame[58] == HIGH) {
-    Serial.println("The time is changing from DST to ST today");
+    return DST_TO_ST;
   }
 }
