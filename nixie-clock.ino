@@ -1,3 +1,4 @@
+#include <TimeLib.h> // https://github.com/PaulStoffregen/Time
 #include "wwvb.h"
 
 #define STATUS_BLINK_MS 100
@@ -31,31 +32,50 @@ int timerStart = 0;
 int previousBit = -0;
 
 void printTime() {
-  int hour = wwvb.getHour();
-  int minute = wwvb.getMinute();
-  int second = wwvb.getSecond();
+
+  int h = hour();
+  int m = minute();
+  int s = second();
   
-  if(hour/2 < 10) {
+  if(h/2 < 10) {
     Serial.print("0");
   }
-  Serial.print(hour/2);
+  Serial.print(h/2);
   Serial.print(":");
-  if(minute < 10) {
+  if(m < 10) {
     Serial.print("0");
   }
-  Serial.print(minute);
+  Serial.print(m);
   Serial.print(":");
   
-  if(second < 10) {
+  if(s < 10) {
     Serial.print("0");
   }
-  Serial.print(second);
+  Serial.print(s);
   Serial.print(" ");
-  if(hour < 12) {
-    Serial.println("AM");
+  if(isAM()) {
+    Serial.print("AM");
   } else {
-    Serial.println("PM");
+    Serial.print("PM");
   }
+//  Serial.print(" -- ");
+//  Serial.print(wwvb.getTimestamp());
+  
+  Serial.print(" -- ");
+
+  switch(timeStatus()) {
+    case timeNotSet:
+      Serial.print("not set yet");
+      break;
+    case timeNeedsSync:
+      Serial.print("needs sync");
+      break;
+    case timeSet:
+      Serial.print("set and synced");
+      break;
+  }
+  
+  Serial.println("");
 }
 
 void loop() {

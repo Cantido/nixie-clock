@@ -1,6 +1,5 @@
 #ifndef wwvb_h
 #define wwvb_h
-
 #include "Arduino.h"
 
 #define REFERENCE_BIT 3
@@ -10,31 +9,34 @@
 #define ST_TO_DST 2
 #define DST_TO_ST 3
 
+#define EPOCH_SECONDS_PER_DAY 86400
+
 class WWVB {
   public:
     WWVB();
     void nextBit(int b);
     void tick();
     void tock();
-    int isTimeSet();
+  private:
+    // not zero-indexed
+    const static int firstDayOfMonth[13];
+    const static int leapYearMonths[13];
+    int timerStart = 0; 
+    int timeFrame[60];
+    int sec = 0;
+    int previousBit;
+    int isAligned = LOW;
+    void checkpoint();
+    int getYear();
+    int getMonth();
+    int getDayOfYear();
+    int getDayOfMonth();
     int getHour();
     int getMinute();
     int getSecond();
-  private:
-    int timerStart = 0; 
-    int timeFrame[60];
-    int bitIndex = 0;
-    int isAligned = LOW;
-    int previousBit;
-    void checkPosition();
-    void triggerDecode();
-    int decodeMinutes();
-    int decodeHours();
-    int decodeDayOfYear();
-    int decodeYear();
-    int decodeLeapYearIndicator();
-    int decodeLeapSecondWarning();
-    int decodeDst();
+    int isLeapYear();
+    int leapSecondThisMonth();
+    int getDstIndicator();
     int decodePulseLength(int len);
 };
 
