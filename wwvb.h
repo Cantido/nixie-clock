@@ -9,14 +9,19 @@
 #define ST_TO_DST 2
 #define DST_TO_ST 3
 
-#define EPOCH_SECONDS_PER_DAY 86400
-
 class WWVB {
   public:
     WWVB();
     void nextBit(int b);
     void tick();
     void tock();
+    int getYear();
+    int getMonth();
+    int getDayOfYear();
+    int getDayOfMonth();
+    int getHour();
+    int getMinute();
+    int getSecond();
     typedef void(*setExternalTime)(time_t t);
     void setSyncListener(setExternalTime syncListener);
   private:
@@ -31,13 +36,6 @@ class WWVB {
     setExternalTime syncListener;
     void announceTime();
     void checkpoint();
-    int getYear();
-    int getMonth();
-    int getDayOfYear();
-    int getDayOfMonth();
-    int getHour();
-    int getMinute();
-    int getSecond();
     int isLeapYear();
     int leapSecondThisMonth();
     int getDstIndicator();

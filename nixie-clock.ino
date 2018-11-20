@@ -34,47 +34,38 @@ int previousBit = -0;
 
 void printTime() {
 
-  int h = hour();
-  int m = minute();
-  int s = second();
-  
-  if(h/2 < 10) {
-    Serial.print("0");
-  }
-  Serial.print(h/2);
-  Serial.print(":");
-  if(m < 10) {
-    Serial.print("0");
-  }
-  Serial.print(m);
-  Serial.print(":");
-  
-  if(s < 10) {
-    Serial.print("0");
-  }
-  Serial.print(s);
+  Serial.print(hour());
+  printDigits(minute());
+  printDigits(second());
   Serial.print(" ");
-  if(isAM()) {
-    Serial.print("AM");
-  } else {
-    Serial.print("PM");
-  }
-  
-  Serial.print(" -- ");
+  Serial.print(day());
+  Serial.print(" ");
+  Serial.print(monthStr(month()));
+  Serial.print(" ");
+  Serial.print(year()); 
+
+    Serial.print(" ");
 
   switch(timeStatus()) {
     case timeNotSet:
-      Serial.print("not set yet");
+      Serial.print("(not set yet)");
       break;
     case timeNeedsSync:
-      Serial.print("needs sync");
+      Serial.print("(needs sync)");
       break;
     case timeSet:
-      Serial.print("set and synced");
+      Serial.print("(set and synced)");
       break;
   }
   
   Serial.println("");
+}
+
+void printDigits(int digits){
+  Serial.print(":");
+  if(digits < 10)
+    Serial.print('0');
+  Serial.print(digits);
 }
 
 void loop() {

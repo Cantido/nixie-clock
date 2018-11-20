@@ -61,7 +61,8 @@ void WWVB::announceTime() {
   tm.Minute = getMinute();
   tm.Hour = getHour();
   tm.Day = getDayOfMonth();
-  tm.Year = getYear() - 1970;
+  tm.Month = getMonth();
+  tm.Year = CalendarYrToTm(getYear());
   time_t t = makeTime(tm);
   syncListener(t);
 }
@@ -136,19 +137,19 @@ int WWVB::getMonth() {
 
   if(isLeapYear() == HIGH) {
       for(int i = 1; i < 13; i++) {
-        if(dayOfYear > leapYearMonths[i]) {
-          return i;
+        if(dayOfYear < leapYearMonths[i]) {
+          return i-1;
         }
       }
   } else {
       for(int i = 1; i < 13; i++) {
-        if(dayOfYear > firstDayOfMonth[i]) {
-          return i;
+        if(dayOfYear < firstDayOfMonth[i]) {
+          return i-1;
         }
       }
   }
 
-  return 0;
+  return 12;
 }
 
 int WWVB::getDayOfYear() {
