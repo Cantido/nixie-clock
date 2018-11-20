@@ -3,10 +3,10 @@
 #include "wwvb.h"
 
 const int WWVB::firstDayOfMonth[13] = {
-  -1, 1, 32, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335
+  -1, 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334
 };
 const int WWVB::leapYearMonths[13] = {
-  -1, 1, 32, 61, 92, 122, 153, 183, 214, 245, 275, 306, 336
+  -1, 0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335
 };
 
 WWVB::WWVB() {
@@ -187,12 +187,14 @@ int WWVB::getDayOfYear() {
 
 int WWVB::getDayOfMonth() {
   int m = getMonth(); 
-
+  int daysBeforeMonth;
+  
   if(isLeapYear() == HIGH) {
-    return getDayOfYear() - leapYearMonths[m];
+    daysBeforeMonth = leapYearMonths[m];
   } else {
-    return getDayOfYear() - firstDayOfMonth[m];
+    daysBeforeMonth = firstDayOfMonth[m];
   }
+  return getDayOfYear() - daysBeforeMonth;
 }
 
 int WWVB::getYear() {
