@@ -1,5 +1,7 @@
 #include <TimeLib.h> // https://github.com/PaulStoffregen/Time
+#include <Timezone.h> // https://github.com/JChristensen/Timezone
 #include "wwvb.h"
+#include "tzdata.h"
 
 #define STATUS_BLINK_MS 100
 
@@ -8,7 +10,10 @@
 #define GREEN_LED 5
 #define BLUE_LED 4
 
+#define TZ_INDEX 1
+
 int previousLevel = LOW;
+
 
 WWVB wwvb = WWVB();
 
@@ -33,16 +38,17 @@ int timerStart = 0;
 int previousBit = -0;
 
 void printTime() {
+  time_t local = tzdata[TZ_INDEX].toLocal(now());
 
-  Serial.print(hour());
-  printDigits(minute());
-  printDigits(second());
+  Serial.print(hour(local));
+  printDigits(minute(local));
+  printDigits(second(local));
   Serial.print(" ");
-  Serial.print(day());
+  Serial.print(day(local));
   Serial.print(" ");
-  Serial.print(monthStr(month()));
+  Serial.print(monthStr(month(local)));
   Serial.print(" ");
-  Serial.print(year()); 
+  Serial.print(year(local)); 
 
     Serial.print(" ");
 
