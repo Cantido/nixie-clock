@@ -63,6 +63,23 @@ void WWVB::announceTime() {
   tm.Day = getDayOfMonth();
   tm.Month = getMonth();
   tm.Year = CalendarYrToTm(getYear());
+
+  Serial.print("Second: ");
+  Serial.println(tm.Second);
+  Serial.print("Minute: ");
+  Serial.println(tm.Minute);
+  Serial.print("Hour: ");
+  Serial.println(tm.Hour);
+  Serial.print("Day: ");
+  Serial.println(tm.Day);
+  Serial.print("Month: ");
+  Serial.println(tm.Month);
+  Serial.print("Year: ");
+  Serial.print(tm.Year);
+  Serial.print(" (converted from ");
+  Serial.println(getYear());
+
+  
   time_t t = makeTime(tm);
   syncListener(t);
 }
