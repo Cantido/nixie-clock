@@ -17,6 +17,8 @@ class WWVB {
     void nextBit(int b);
     void tick();
     void tock();
+    typedef void(*setExternalTime)(time_t t);
+    void setSyncListener(setExternalTime syncListener);
   private:
     // not zero-indexed
     const static int firstDayOfMonth[13];
@@ -26,6 +28,8 @@ class WWVB {
     int sec = 0;
     int previousBit;
     int isAligned = LOW;
+    setExternalTime syncListener;
+    void announceTime();
     void checkpoint();
     int getYear();
     int getMonth();

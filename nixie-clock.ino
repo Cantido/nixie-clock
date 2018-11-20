@@ -23,9 +23,10 @@ void setup() {
     digitalWrite(PDN_PIN, HIGH);
     delay(1000);
     digitalWrite(PDN_PIN, LOW);
+
+    wwvb.setSyncListener(setTime);
     
     Serial.begin(115200);
-
 }
 
 int timerStart = 0;
@@ -58,8 +59,6 @@ void printTime() {
   } else {
     Serial.print("PM");
   }
-//  Serial.print(" -- ");
-//  Serial.print(wwvb.getTimestamp());
   
   Serial.print(" -- ");
 

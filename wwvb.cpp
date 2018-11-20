@@ -31,7 +31,7 @@ void WWVB::nextBit(int b) {
 
   if(sec == 59 && isAligned) {
     Serial.println("We did it! we got the time locked-down!");
-    setTime(getHour(), getMinute(), getSecond(), getDayOfMonth(), getMonth(), getYear());
+    announceTime();
   }
 
   previousBit = b;
@@ -49,6 +49,21 @@ void WWVB::tock() {
   int decodedBit = decodePulseLength(pulseLength);
 
   nextBit(decodedBit);
+}
+
+void WWVB::setSyncListener(setExternalTime listener) {
+  syncListener = listener;
+}
+
+void WWVB::announceTime() {
+  tmElements_t tm;
+  tm.Second = getSecond();
+  tm.Minute = getMinute();
+  tm.Hour = getHour();
+  tm.Day = getDayOfMonth();
+  tm.Year = getYear() - 1970;
+  time_t t = makeTime(tm);
+  syncListener(t);
 }
 
 int WWVB::decodePulseLength(int len) {
