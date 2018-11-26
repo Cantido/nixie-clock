@@ -7,7 +7,7 @@
 class TimePrint {
   public:
     TimePrint();
-    static void print(time_t t, Timezone tz);
+    static void print(time_t t);
   private:
     static void printDigits(int digits);
 };

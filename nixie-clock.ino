@@ -5,19 +5,16 @@
 #include "wwvb.h"
 #include "tzdata.h"
 #include "TimePrint.h"
+#include "TimeDisplay.h"
+#include "pins.h"
 
-#define STATUS_BLINK_MS 100
-
-#define PWM_IN 0
-#define PDN_PIN 7
-
+#define NIXIES_ENABLED LOW
 
 #define TZ_INDEX 1
 
 Timezone tz = tzdata[TZ_INDEX];
 
 int previousLevel = LOW;
-
 
 WWVB wwvb = WWVB();
 
@@ -48,10 +45,12 @@ void loop() {
   int sig = analogRead(PWM_IN);
   int pwmSig = (sig > 350);
 
-
   if(previousLevel == LOW && pwmSig == HIGH) {
     wwvb.tick();
-    TimePrint.print(now(), tz);
+    TimePrint.print(tz.toLocal(now()));
+    if(NIXIES_ENABLED == HIGH) {
+      TimeDisplay.show(tz.toLocal(now()));
+    }
   } else if(previousLevel == HIGH && pwmSig == LOW) {
     wwvb.tock();
   }

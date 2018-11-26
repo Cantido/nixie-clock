@@ -1,23 +1,21 @@
 #include "TimePrint.h"
 
-void TimePrint::print(time_t t, Timezone tz) {
-  time_t local = tz.toLocal(t);
-
-  Serial.print(hourFormat12(local));
-  printDigits(minute(local));
-  printDigits(second(local));
+void TimePrint::print(time_t t) {
+  Serial.print(hourFormat12(t));
+  printDigits(minute(t));
+  printDigits(second(t));
   Serial.print(" ");
-  if(isAM(local)) {
+  if(isAM(t)) {
     Serial.print("AM");
   } else {
     Serial.print("PM");
   }
   Serial.print(" ");
-  Serial.print(day(local));
+  Serial.print(day(t));
   Serial.print(" ");
-  Serial.print(monthStr(month(local)));
+  Serial.print(monthStr(month(t)));
   Serial.print(" ");
-  Serial.print(year(local)); 
+  Serial.print(year(t)); 
 
     Serial.print(" ");
 
