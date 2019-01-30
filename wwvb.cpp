@@ -31,7 +31,7 @@ void WWVB::nextBit(int b) {
 
   if(sec == 59 && isAligned) {
     Serial.println("We did it! we got the time locked-down!");
-    announceTime();
+    syncListener(getTime());
   }
 
   previousBit = b;
@@ -55,7 +55,7 @@ void WWVB::setSyncListener(setExternalTime listener) {
   syncListener = listener;
 }
 
-void WWVB::announceTime() {
+tmElements_t WWVB::getTimeElements() {
   tmElements_t tm;
   tm.Second = getSecond();
   tm.Minute = getMinute();
@@ -64,24 +64,11 @@ void WWVB::announceTime() {
   tm.Month = getMonth();
   tm.Year = CalendarYrToTm(getYear());
 
-  Serial.print("Second: ");
-  Serial.println(tm.Second);
-  Serial.print("Minute: ");
-  Serial.println(tm.Minute);
-  Serial.print("Hour: ");
-  Serial.println(tm.Hour);
-  Serial.print("Day: ");
-  Serial.println(tm.Day);
-  Serial.print("Month: ");
-  Serial.println(tm.Month);
-  Serial.print("Year: ");
-  Serial.print(tm.Year);
-  Serial.print(" (converted from ");
-  Serial.println(getYear());
+  return tm;
+}
 
-  
-  time_t t = makeTime(tm);
-  syncListener(t);
+time_t WWVB::getTime() {
+  return makeTime(getTimeElements());
 }
 
 int WWVB::decodePulseLength(int len) {

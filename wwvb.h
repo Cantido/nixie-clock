@@ -22,6 +22,8 @@ class WWVB {
     int getHour();
     int getMinute();
     int getSecond();
+    tmElements_t getTimeElements();
+    time_t getTime();
     typedef void(*setExternalTime)(time_t t);
     void setSyncListener(setExternalTime syncListener);
   private:
@@ -34,7 +36,6 @@ class WWVB {
     int previousBit;
     int isAligned = LOW;
     setExternalTime syncListener;
-    void announceTime();
     void checkpoint();
     int isLeapYear();
     int leapSecondThisMonth();
