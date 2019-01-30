@@ -11,20 +11,20 @@ typedef enum {
 class WWVB {
   public:
     WWVB();
-    void nextBit(byte b);
+    void nextBit(const byte b);
     void tick();
     void tock();
-    word getYear(byte timeFrame[60]);
-    byte getMonth(byte timeFrame[60]);
-    word getDayOfYear(byte timeFrame[60]);
-    byte getDayOfMonth(byte timeFrame[60]);
-    byte getHour(byte timeFrame[60]);
-    byte getMinute(byte timeFrame[60]);
+    word getYear(const byte timeFrame[60]);
+    byte getMonth(const byte timeFrame[60]);
+    word getDayOfYear(const byte timeFrame[60]);
+    byte getDayOfMonth(const byte timeFrame[60]);
+    byte getHour(const byte timeFrame[60]);
+    byte getMinute(const byte timeFrame[60]);
     byte getSecond();
-    tmElements_t getTimeElements(byte timeFrame[60]);
-    time_t getTime(byte timeFrame[60]);
+    tmElements_t getTimeElements(const byte timeFrame[60]);
+    time_t getTime(const byte timeFrame[60]);
     typedef void(*setExternalTime)(time_t t);
-    void setSyncListener(setExternalTime syncListener);
+    void setSyncListener(const setExternalTime syncListener);
     void reset();
   private:
     // not zero-indexed
@@ -37,10 +37,10 @@ class WWVB {
     byte isAligned = LOW;
     setExternalTime syncListener;
     void checkpoint();
-    bool isLeapYear(byte timeFrame[60]);
-    bool leapSecondThisMonth(byte timeFrame[60]);
-    daylightSavings_t getDstIndicator(byte timeFrame[60]);
-    byte decodePulseLength(unsigned long len);
+    bool isLeapYear(const byte timeFrame[60]);
+    bool leapSecondThisMonth(const byte timeFrame[60]);
+    daylightSavings_t getDstIndicator(const byte timeFrame[60]);
+    byte decodePulseLength(const unsigned long len);
 };
 
 #endif

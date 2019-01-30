@@ -34,7 +34,7 @@ void WWVB::tock() {
   nextBit(decodedBit);
 }
 
-byte WWVB::decodePulseLength(unsigned long len) {
+byte WWVB::decodePulseLength(const unsigned long len) {
   if (len >= 50 && len < 350) {
     return LOW;
   } else if (len >= 350 && len < 650) {
@@ -46,7 +46,7 @@ byte WWVB::decodePulseLength(unsigned long len) {
   }
 }
 
-void WWVB::nextBit(byte b) {
+void WWVB::nextBit(const byte b) {
   if (b != LOW && b != HIGH && b != REFERENCE_BIT) {
     Serial.print("Got an invalid next WWVB bit value: ");
     Serial.println(b);
@@ -101,11 +101,11 @@ void WWVB::checkpoint() {
   }
 }
 
-void WWVB::setSyncListener(setExternalTime listener) {
+void WWVB::setSyncListener(const setExternalTime listener) {
   syncListener = listener;
 }
 
-tmElements_t WWVB::getTimeElements(byte timeFrame[60]) {
+tmElements_t WWVB::getTimeElements(const byte timeFrame[60]) {
   tmElements_t tm;
   tm.Second = getSecond();
   tm.Minute = getMinute(timeFrame);
@@ -117,7 +117,7 @@ tmElements_t WWVB::getTimeElements(byte timeFrame[60]) {
   return tm;
 }
 
-time_t WWVB::getTime(byte timeFrame[60]) {
+time_t WWVB::getTime(const byte timeFrame[60]) {
   return makeTime(getTimeElements(timeFrame));
 }
 
@@ -125,7 +125,7 @@ byte WWVB::getSecond() {
   return sec;
 }
 
-byte WWVB::getMinute(byte timeFrame[60]) {
+byte WWVB::getMinute(const byte timeFrame[60]) {
   byte minutes =
     timeFrame[1] * 40 +
     timeFrame[2] * 20 +
@@ -138,7 +138,7 @@ byte WWVB::getMinute(byte timeFrame[60]) {
   return minutes;
 }
 
-byte WWVB::getHour(byte timeFrame[60]) {
+byte WWVB::getHour(const byte timeFrame[60]) {
   byte hours =
     timeFrame[12] * 20 +
     timeFrame[13] * 10 +
@@ -150,7 +150,7 @@ byte WWVB::getHour(byte timeFrame[60]) {
   return hours;
 }
 
-word WWVB::getDayOfYear(byte timeFrame[60]) {
+word WWVB::getDayOfYear(const byte timeFrame[60]) {
   word day =
     timeFrame[22] * 200 +
     timeFrame[23] * 100 +
@@ -166,7 +166,7 @@ word WWVB::getDayOfYear(byte timeFrame[60]) {
   return day;
 }
 
-word WWVB::getYear(byte timeFrame[60]) {
+word WWVB::getYear(const byte timeFrame[60]) {
   word year =
     timeFrame[45] * 80 +
     timeFrame[46] * 40 +
@@ -180,7 +180,7 @@ word WWVB::getYear(byte timeFrame[60]) {
   return 2000 + year;
 }
 
-byte WWVB::getMonth(byte timeFrame[60]) {
+byte WWVB::getMonth(const byte timeFrame[60]) {
   word dayOfYear = getDayOfYear(timeFrame);
 
   if(isLeapYear(timeFrame) == HIGH) {
@@ -200,7 +200,7 @@ byte WWVB::getMonth(byte timeFrame[60]) {
   return 12;
 }
 
-byte WWVB::getDayOfMonth(byte timeFrame[60]) {
+byte WWVB::getDayOfMonth(const byte timeFrame[60]) {
   byte m = getMonth(timeFrame);
   word daysBeforeMonth;
 
@@ -212,15 +212,15 @@ byte WWVB::getDayOfMonth(byte timeFrame[60]) {
   return getDayOfYear(timeFrame) - daysBeforeMonth;
 }
 
-bool WWVB::isLeapYear(byte timeFrame[60]) {
+bool WWVB::isLeapYear(const byte timeFrame[60]) {
   return timeFrame[55] == HIGH;
 }
 
-bool WWVB::leapSecondThisMonth(byte timeFrame[60]) {
+bool WWVB::leapSecondThisMonth(const byte timeFrame[60]) {
   return timeFrame[56] == HIGH;
 }
 
-daylightSavings_t WWVB::getDstIndicator(byte timeFrame[60]) {
+daylightSavings_t WWVB::getDstIndicator(const byte timeFrame[60]) {
   if (timeFrame[57] == LOW && timeFrame[58] == LOW) {
     return standardTimeInEffect;
   } else if (timeFrame[57] == HIGH && timeFrame[58] == HIGH) {
