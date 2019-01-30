@@ -25,7 +25,7 @@ class WWVB {
     time_t getTime(uint8_t timeFrame[60]);
     typedef void(*setExternalTime)(time_t t);
     void setSyncListener(setExternalTime syncListener);
-
+    void reset();
   private:
     // not zero-indexed
     const static uint16_t firstDayOfMonth[13];

@@ -10,7 +10,14 @@ const uint16_t WWVB::leapYearMonths[13] = {
 };
 
 WWVB::WWVB() {
+  reset();
+}
 
+void WWVB::reset() {
+  timerStart = 0;
+  timeFrame[60] = {0};
+  sec = 0;
+  isAligned = LOW;
 }
 
 void WWVB::tick() {
@@ -42,12 +49,11 @@ uint8_t WWVB::decodePulseLength(int len) {
 void WWVB::nextBit(uint8_t b) {
   if (b == REFERENCE_BIT && previousBit == REFERENCE_BIT) {
     Serial.println("starting a new frame");
-    timeFrame[60] = {0};
+    reset();
     isAligned = HIGH;
-    sec = 0;
   } else {
     sec += 1;
-  }
+  } 
 
   if (b == REFERENCE_BIT) {
     checkpoint();
@@ -84,7 +90,7 @@ void WWVB::checkpoint() {
         Serial.print("still not aligned, got a reference frame but we are at sec ");
         Serial.println(sec);
       }
-      isAligned = LOW;
+      reset();
   }
 }
 
