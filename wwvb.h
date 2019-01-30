@@ -30,7 +30,7 @@ class WWVB {
     // not zero-indexed
     const static int firstDayOfMonth[13];
     const static int leapYearMonths[13];
-    const static int bcdWeights[8];
+    const static int bcdWeights[10];
     int atobcd(int arr[], int msbIndex, int lsbIndex);
     int timerStart = 0; 
     int timeFrame[60];
