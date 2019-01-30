@@ -47,6 +47,13 @@ uint8_t WWVB::decodePulseLength(int len) {
 }
 
 void WWVB::nextBit(uint8_t b) {
+  if (b != LOW && b != HIGH && b != REFERENCE_BIT) {
+    Serial.print("Got an invalid next WWVB bit value: ");
+    Serial.println(b);
+    reset();
+    return;
+  }
+  
   if (b == REFERENCE_BIT && previousBit == REFERENCE_BIT) {
     Serial.println("starting a new frame");
     reset();
