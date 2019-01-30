@@ -31,7 +31,7 @@ void WWVB::nextBit(int b) {
 
   if(sec == 59 && isAligned) {
     Serial.println("We did it! we got the time locked-down!");
-    syncListener(getTime());
+    syncListener(getTime(timeFrame));
   }
 
   previousBit = b;
@@ -55,20 +55,20 @@ void WWVB::setSyncListener(setExternalTime listener) {
   syncListener = listener;
 }
 
-tmElements_t WWVB::getTimeElements() {
+tmElements_t WWVB::getTimeElements(int timeFrame[60]) {
   tmElements_t tm;
   tm.Second = getSecond();
-  tm.Minute = getMinute();
-  tm.Hour = getHour();
-  tm.Day = getDayOfMonth();
-  tm.Month = getMonth();
-  tm.Year = CalendarYrToTm(getYear());
+  tm.Minute = getMinute(timeFrame);
+  tm.Hour = getHour(timeFrame);
+  tm.Day = getDayOfMonth(timeFrame);
+  tm.Month = getMonth(timeFrame);
+  tm.Year = CalendarYrToTm(getYear(timeFrame));
 
   return tm;
 }
 
-time_t WWVB::getTime() {
-  return makeTime(getTimeElements());
+time_t WWVB::getTime(int timeFrame[60]) {
+  return makeTime(getTimeElements(timeFrame));
 }
 
 int WWVB::decodePulseLength(int len) {
@@ -107,7 +107,7 @@ void WWVB::checkpoint() {
   }
 }
 
-int WWVB::getHour() {
+int WWVB::getHour(int timeFrame[60]) {
   int hours =
     timeFrame[12] * 20 +
     timeFrame[13] * 10 +
@@ -119,7 +119,7 @@ int WWVB::getHour() {
   return hours;
 }
 
-int WWVB::getMinute() {
+int WWVB::getMinute(int timeFrame[60]) {
   int minutes =
     timeFrame[1] * 40 +
     timeFrame[2] * 20 +
@@ -136,10 +136,10 @@ int WWVB::getSecond() {
   return sec;
 }
 
-int WWVB::getMonth() {
-  int dayOfYear = getDayOfYear();
+int WWVB::getMonth(int timeFrame[60]) {
+  int dayOfYear = getDayOfYear(timeFrame);
 
-  if(isLeapYear() == HIGH) {
+  if(isLeapYear(timeFrame) == HIGH) {
       for(int i = 1; i < 13; i++) {
         if(dayOfYear < leapYearMonths[i]) {
           return i-1;
@@ -156,7 +156,7 @@ int WWVB::getMonth() {
   return 12;
 }
 
-int WWVB::getDayOfYear() {
+int WWVB::getDayOfYear(int timeFrame[60]) {
   int day =
     timeFrame[22] * 200 +
     timeFrame[23] * 100 +
@@ -172,19 +172,19 @@ int WWVB::getDayOfYear() {
   return day;
 }
 
-int WWVB::getDayOfMonth() {
-  int m = getMonth(); 
+int WWVB::getDayOfMonth(int timeFrame[60]) {
+  int m = getMonth(timeFrame); 
   int daysBeforeMonth;
   
-  if(isLeapYear() == HIGH) {
+  if(isLeapYear(timeFrame) == HIGH) {
     daysBeforeMonth = leapYearMonths[m];
   } else {
     daysBeforeMonth = firstDayOfMonth[m];
   }
-  return getDayOfYear() - daysBeforeMonth;
+  return getDayOfYear(timeFrame) - daysBeforeMonth;
 }
 
-int WWVB::getYear() {
+int WWVB::getYear(int timeFrame[60]) {
   int year =
     timeFrame[45] * 80 +
     timeFrame[46] * 40 +
@@ -198,15 +198,15 @@ int WWVB::getYear() {
   return 2000 + year;
 }
 
-int WWVB::isLeapYear() {
+int WWVB::isLeapYear(int timeFrame[60]) {
   return timeFrame[55];
 }
 
-int WWVB::leapSecondThisMonth() {
+int WWVB::leapSecondThisMonth(int timeFrame[60]) {
   return timeFrame[56];
 }
 
-int WWVB::getDstIndicator() {
+int WWVB::getDstIndicator(int timeFrame[60]) {
   if (timeFrame[57] == LOW && timeFrame[58] == LOW) {
     return ST_ACTIVE;
   } else if (timeFrame[57] == HIGH && timeFrame[58] == HIGH) {
