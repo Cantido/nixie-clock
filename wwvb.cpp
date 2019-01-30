@@ -207,7 +207,7 @@ bool WWVB::leapSecondThisMonth(uint8_t timeFrame[60]) {
   return timeFrame[56] == HIGH;
 }
 
-WWVB::daylightSavings_t WWVB::getDstIndicator(uint8_t timeFrame[60]) {
+daylightSavings_t WWVB::getDstIndicator(uint8_t timeFrame[60]) {
   if (timeFrame[57] == LOW && timeFrame[58] == LOW) {
     return standardTimeInEffect;
   } else if (timeFrame[57] == HIGH && timeFrame[58] == HIGH) {

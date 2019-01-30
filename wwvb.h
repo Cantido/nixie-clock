@@ -11,7 +11,7 @@ typedef enum {
 class WWVB {
   public:
     WWVB();
-    void nextBit(int b);
+    void nextBit(uint8_t b);
     void tick();
     void tock();
     uint16_t getYear(uint8_t timeFrame[60]);
@@ -25,6 +25,7 @@ class WWVB {
     time_t getTime(uint8_t timeFrame[60]);
     typedef void(*setExternalTime)(time_t t);
     void setSyncListener(setExternalTime syncListener);
+
   private:
     // not zero-indexed
     const static uint16_t firstDayOfMonth[13];
@@ -32,7 +33,7 @@ class WWVB {
     int timerStart = 0;
     uint8_t timeFrame[60];
     uint8_t sec = 0;
-    wwvbBit_t previousBit;
+    uint8_t previousBit;
     uint8_t isAligned = LOW;
     setExternalTime syncListener;
     void checkpoint();
