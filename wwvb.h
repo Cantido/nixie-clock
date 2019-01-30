@@ -11,36 +11,36 @@ typedef enum {
 class WWVB {
   public:
     WWVB();
-    void nextBit(uint8_t b);
+    void nextBit(byte b);
     void tick();
     void tock();
-    uint16_t getYear(uint8_t timeFrame[60]);
-    uint8_t getMonth(uint8_t timeFrame[60]);
-    uint16_t getDayOfYear(uint8_t timeFrame[60]);
-    uint8_t getDayOfMonth(uint8_t timeFrame[60]);
-    uint8_t getHour(uint8_t timeFrame[60]);
-    uint8_t getMinute(uint8_t timeFrame[60]);
-    uint8_t getSecond();
-    tmElements_t getTimeElements(uint8_t timeFrame[60]);
-    time_t getTime(uint8_t timeFrame[60]);
+    word getYear(byte timeFrame[60]);
+    byte getMonth(byte timeFrame[60]);
+    word getDayOfYear(byte timeFrame[60]);
+    byte getDayOfMonth(byte timeFrame[60]);
+    byte getHour(byte timeFrame[60]);
+    byte getMinute(byte timeFrame[60]);
+    byte getSecond();
+    tmElements_t getTimeElements(byte timeFrame[60]);
+    time_t getTime(byte timeFrame[60]);
     typedef void(*setExternalTime)(time_t t);
     void setSyncListener(setExternalTime syncListener);
     void reset();
   private:
     // not zero-indexed
-    const static uint16_t firstDayOfMonth[13];
-    const static uint16_t leapYearMonths[13];
-    uint32_t timerStart = 0;
-    uint8_t timeFrame[60];
-    uint8_t sec = 0;
-    uint8_t previousBit;
-    uint8_t isAligned = LOW;
+    const static word firstDayOfMonth[13];
+    const static word leapYearMonths[13];
+    unsigned long timerStart = 0;
+    byte timeFrame[60];
+    byte sec = 0;
+    byte previousBit;
+    byte isAligned = LOW;
     setExternalTime syncListener;
     void checkpoint();
-    bool isLeapYear(uint8_t timeFrame[60]);
-    bool leapSecondThisMonth(uint8_t timeFrame[60]);
-    daylightSavings_t getDstIndicator(uint8_t timeFrame[60]);
-    uint8_t decodePulseLength(uint32_t len);
+    bool isLeapYear(byte timeFrame[60]);
+    bool leapSecondThisMonth(byte timeFrame[60]);
+    daylightSavings_t getDstIndicator(byte timeFrame[60]);
+    byte decodePulseLength(unsigned long len);
 };
 
 #endif

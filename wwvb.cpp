@@ -2,10 +2,10 @@
 #include "Arduino.h"
 #include "wwvb.h"
 
-const uint16_t WWVB::firstDayOfMonth[13] = {
+const word WWVB::firstDayOfMonth[13] = {
   0, 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334
 };
-const uint16_t WWVB::leapYearMonths[13] = {
+const word WWVB::leapYearMonths[13] = {
   0, 0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335
 };
 
@@ -28,13 +28,13 @@ void WWVB::tock() {
   if (timerStart == 0) {
     return;
   }
-  uint32_t pulseLength = millis() - timerStart;
-  uint8_t decodedBit = decodePulseLength(pulseLength);
+  unsigned long pulseLength = millis() - timerStart;
+  byte decodedBit = decodePulseLength(pulseLength);
 
   nextBit(decodedBit);
 }
 
-uint8_t WWVB::decodePulseLength(uint32_t len) {
+byte WWVB::decodePulseLength(unsigned long len) {
   if (len >= 50 && len < 350) {
     return LOW;
   } else if (len >= 350 && len < 650) {
@@ -46,7 +46,7 @@ uint8_t WWVB::decodePulseLength(uint32_t len) {
   }
 }
 
-void WWVB::nextBit(uint8_t b) {
+void WWVB::nextBit(byte b) {
   if (b != LOW && b != HIGH && b != REFERENCE_BIT) {
     Serial.print("Got an invalid next WWVB bit value: ");
     Serial.println(b);
@@ -105,7 +105,7 @@ void WWVB::setSyncListener(setExternalTime listener) {
   syncListener = listener;
 }
 
-tmElements_t WWVB::getTimeElements(uint8_t timeFrame[60]) {
+tmElements_t WWVB::getTimeElements(byte timeFrame[60]) {
   tmElements_t tm;
   tm.Second = getSecond();
   tm.Minute = getMinute(timeFrame);
@@ -117,16 +117,16 @@ tmElements_t WWVB::getTimeElements(uint8_t timeFrame[60]) {
   return tm;
 }
 
-time_t WWVB::getTime(uint8_t timeFrame[60]) {
+time_t WWVB::getTime(byte timeFrame[60]) {
   return makeTime(getTimeElements(timeFrame));
 }
 
-uint8_t WWVB::getSecond() {
+byte WWVB::getSecond() {
   return sec;
 }
 
-uint8_t WWVB::getMinute(uint8_t timeFrame[60]) {
-  uint8_t minutes =
+byte WWVB::getMinute(byte timeFrame[60]) {
+  byte minutes =
     timeFrame[1] * 40 +
     timeFrame[2] * 20 +
     timeFrame[3] * 10 +
@@ -138,8 +138,8 @@ uint8_t WWVB::getMinute(uint8_t timeFrame[60]) {
   return minutes;
 }
 
-uint8_t WWVB::getHour(uint8_t timeFrame[60]) {
-  uint8_t hours =
+byte WWVB::getHour(byte timeFrame[60]) {
+  byte hours =
     timeFrame[12] * 20 +
     timeFrame[13] * 10 +
     timeFrame[15] * 8 +
@@ -150,8 +150,8 @@ uint8_t WWVB::getHour(uint8_t timeFrame[60]) {
   return hours;
 }
 
-uint16_t WWVB::getDayOfYear(uint8_t timeFrame[60]) {
-  uint16_t day =
+word WWVB::getDayOfYear(byte timeFrame[60]) {
+  word day =
     timeFrame[22] * 200 +
     timeFrame[23] * 100 +
     timeFrame[25] * 80 +
@@ -166,8 +166,8 @@ uint16_t WWVB::getDayOfYear(uint8_t timeFrame[60]) {
   return day;
 }
 
-uint16_t WWVB::getYear(uint8_t timeFrame[60]) {
-  uint16_t year =
+word WWVB::getYear(byte timeFrame[60]) {
+  word year =
     timeFrame[45] * 80 +
     timeFrame[46] * 40 +
     timeFrame[47] * 20 +
@@ -180,17 +180,17 @@ uint16_t WWVB::getYear(uint8_t timeFrame[60]) {
   return 2000 + year;
 }
 
-uint8_t WWVB::getMonth(uint8_t timeFrame[60]) {
-  uint16_t dayOfYear = getDayOfYear(timeFrame);
+byte WWVB::getMonth(byte timeFrame[60]) {
+  word dayOfYear = getDayOfYear(timeFrame);
 
   if(isLeapYear(timeFrame) == HIGH) {
-      for(uint8_t i = 1; i < 13; i++) {
+      for(byte i = 1; i < 13; i++) {
         if(dayOfYear < leapYearMonths[i]) {
           return i-1;
         }
       }
   } else {
-      for(uint8_t i = 1; i < 13; i++) {
+      for(byte i = 1; i < 13; i++) {
         if(dayOfYear < firstDayOfMonth[i]) {
           return i-1;
         }
@@ -200,9 +200,9 @@ uint8_t WWVB::getMonth(uint8_t timeFrame[60]) {
   return 12;
 }
 
-uint8_t WWVB::getDayOfMonth(uint8_t timeFrame[60]) {
-  uint8_t m = getMonth(timeFrame);
-  uint16_t daysBeforeMonth;
+byte WWVB::getDayOfMonth(byte timeFrame[60]) {
+  byte m = getMonth(timeFrame);
+  word daysBeforeMonth;
 
   if(isLeapYear(timeFrame) == HIGH) {
     daysBeforeMonth = leapYearMonths[m];
@@ -212,15 +212,15 @@ uint8_t WWVB::getDayOfMonth(uint8_t timeFrame[60]) {
   return getDayOfYear(timeFrame) - daysBeforeMonth;
 }
 
-bool WWVB::isLeapYear(uint8_t timeFrame[60]) {
+bool WWVB::isLeapYear(byte timeFrame[60]) {
   return timeFrame[55] == HIGH;
 }
 
-bool WWVB::leapSecondThisMonth(uint8_t timeFrame[60]) {
+bool WWVB::leapSecondThisMonth(byte timeFrame[60]) {
   return timeFrame[56] == HIGH;
 }
 
-daylightSavings_t WWVB::getDstIndicator(uint8_t timeFrame[60]) {
+daylightSavings_t WWVB::getDstIndicator(byte timeFrame[60]) {
   if (timeFrame[57] == LOW && timeFrame[58] == LOW) {
     return standardTimeInEffect;
   } else if (timeFrame[57] == HIGH && timeFrame[58] == HIGH) {
