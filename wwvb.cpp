@@ -2,11 +2,11 @@
 #include "Arduino.h"
 #include "wwvb.h"
 
-const int WWVB::firstDayOfMonth[13] = {
-  -1, 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334
+const uint16_t WWVB::firstDayOfMonth[13] = {
+  0, 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334
 };
-const int WWVB::leapYearMonths[13] = {
-  -1, 0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335
+const uint16_t WWVB::leapYearMonths[13] = {
+  0, 0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335
 };
 
 WWVB::WWVB() {
@@ -27,7 +27,7 @@ void WWVB::tock() {
   nextBit(decodedBit);
 }
 
-int WWVB::decodePulseLength(int len) {
+uint8_t WWVB::decodePulseLength(int len) {
   if (len >= 50 && len < 350) {
     return LOW;
   } else if (len >= 350 && len < 650) {
@@ -39,7 +39,7 @@ int WWVB::decodePulseLength(int len) {
   }
 }
 
-void WWVB::nextBit(int b) {
+void WWVB::nextBit(uint8_t b) {
   if (b == REFERENCE_BIT && previousBit == REFERENCE_BIT) {
     Serial.println("starting a new frame");
     timeFrame[60] = {0};
@@ -92,7 +92,7 @@ void WWVB::setSyncListener(setExternalTime listener) {
   syncListener = listener;
 }
 
-tmElements_t WWVB::getTimeElements(int timeFrame[60]) {
+tmElements_t WWVB::getTimeElements(uint8_t timeFrame[60]) {
   tmElements_t tm;
   tm.Second = getSecond();
   tm.Minute = getMinute(timeFrame);
@@ -104,16 +104,16 @@ tmElements_t WWVB::getTimeElements(int timeFrame[60]) {
   return tm;
 }
 
-time_t WWVB::getTime(int timeFrame[60]) {
+time_t WWVB::getTime(uint8_t timeFrame[60]) {
   return makeTime(getTimeElements(timeFrame));
 }
 
-int WWVB::getSecond() {
+uint8_t WWVB::getSecond() {
   return sec;
 }
 
-int WWVB::getMinute(int timeFrame[60]) {
-  int minutes =
+uint8_t WWVB::getMinute(uint8_t timeFrame[60]) {
+  uint8_t minutes =
     timeFrame[1] * 40 +
     timeFrame[2] * 20 +
     timeFrame[3] * 10 +
@@ -125,8 +125,8 @@ int WWVB::getMinute(int timeFrame[60]) {
   return minutes;
 }
 
-int WWVB::getHour(int timeFrame[60]) {
-  int hours =
+uint8_t WWVB::getHour(uint8_t timeFrame[60]) {
+  uint8_t hours =
     timeFrame[12] * 20 +
     timeFrame[13] * 10 +
     timeFrame[15] * 8 +
@@ -137,8 +137,8 @@ int WWVB::getHour(int timeFrame[60]) {
   return hours;
 }
 
-int WWVB::getDayOfYear(int timeFrame[60]) {
-  int day =
+uint16_t WWVB::getDayOfYear(uint8_t timeFrame[60]) {
+  uint16_t day =
     timeFrame[22] * 200 +
     timeFrame[23] * 100 +
     timeFrame[25] * 80 +
@@ -153,8 +153,8 @@ int WWVB::getDayOfYear(int timeFrame[60]) {
   return day;
 }
 
-int WWVB::getYear(int timeFrame[60]) {
-  int year =
+uint16_t WWVB::getYear(uint8_t timeFrame[60]) {
+  uint16_t year =
     timeFrame[45] * 80 +
     timeFrame[46] * 40 +
     timeFrame[47] * 20 +
@@ -167,17 +167,17 @@ int WWVB::getYear(int timeFrame[60]) {
   return 2000 + year;
 }
 
-int WWVB::getMonth(int timeFrame[60]) {
-  int dayOfYear = getDayOfYear(timeFrame);
+uint8_t WWVB::getMonth(uint8_t timeFrame[60]) {
+  uint16_t dayOfYear = getDayOfYear(timeFrame);
 
   if(isLeapYear(timeFrame) == HIGH) {
-      for(int i = 1; i < 13; i++) {
+      for(uint8_t i = 1; i < 13; i++) {
         if(dayOfYear < leapYearMonths[i]) {
           return i-1;
         }
       }
   } else {
-      for(int i = 1; i < 13; i++) {
+      for(uint8_t i = 1; i < 13; i++) {
         if(dayOfYear < firstDayOfMonth[i]) {
           return i-1;
         }
@@ -187,9 +187,9 @@ int WWVB::getMonth(int timeFrame[60]) {
   return 12;
 }
 
-int WWVB::getDayOfMonth(int timeFrame[60]) {
-  int m = getMonth(timeFrame);
-  int daysBeforeMonth;
+uint8_t WWVB::getDayOfMonth(uint8_t timeFrame[60]) {
+  uint8_t m = getMonth(timeFrame);
+  uint16_t daysBeforeMonth;
 
   if(isLeapYear(timeFrame) == HIGH) {
     daysBeforeMonth = leapYearMonths[m];
@@ -199,22 +199,22 @@ int WWVB::getDayOfMonth(int timeFrame[60]) {
   return getDayOfYear(timeFrame) - daysBeforeMonth;
 }
 
-int WWVB::isLeapYear(int timeFrame[60]) {
-  return timeFrame[55];
+bool WWVB::isLeapYear(uint8_t timeFrame[60]) {
+  return timeFrame[55] == HIGH;
 }
 
-int WWVB::leapSecondThisMonth(int timeFrame[60]) {
-  return timeFrame[56];
+bool WWVB::leapSecondThisMonth(uint8_t timeFrame[60]) {
+  return timeFrame[56] == HIGH;
 }
 
-int WWVB::getDstIndicator(int timeFrame[60]) {
+WWVB::daylightSavings_t WWVB::getDstIndicator(uint8_t timeFrame[60]) {
   if (timeFrame[57] == LOW && timeFrame[58] == LOW) {
-    return ST_ACTIVE;
+    return standardTimeInEffect;
   } else if (timeFrame[57] == HIGH && timeFrame[58] == HIGH) {
-    return DST_ACTIVE;
+    return daylightSavingsInEffect;
   } else if (timeFrame[57] == HIGH && timeFrame[58] == LOW) {
-    return ST_TO_DST;
+    return changeToSavingsToday;
   } else if (timeFrame[57] == LOW && timeFrame[58] == HIGH) {
-    return DST_TO_ST;
+    return changeToStandardToday;
   }
 }

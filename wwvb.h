@@ -4,10 +4,9 @@
 
 #define REFERENCE_BIT 3
 
-#define ST_ACTIVE 0
-#define DST_ACTIVE 1
-#define ST_TO_DST 2
-#define DST_TO_ST 3
+typedef enum {
+  standardTimeInEffect, daylightSavingsInEffect, changeToStandardToday, changeToSavingsToday
+} daylightSavings_t;
 
 class WWVB {
   public:
@@ -15,34 +14,32 @@ class WWVB {
     void nextBit(int b);
     void tick();
     void tock();
-    int getYear(int timeFrame[60]);
-    int getMonth(int timeFrame[60]);
-    int getDayOfYear(int timeFrame[60]);
-    int getDayOfMonth(int timeFrame[60]);
-    int getHour(int timeFrame[60]);
-    int getMinute(int timeFrame[60]);
-    int getSecond();
-    tmElements_t getTimeElements(int timeFrame[60]);
-    time_t getTime(int timeFrame[60]);
+    uint16_t getYear(uint8_t timeFrame[60]);
+    uint8_t getMonth(uint8_t timeFrame[60]);
+    uint16_t getDayOfYear(uint8_t timeFrame[60]);
+    uint8_t getDayOfMonth(uint8_t timeFrame[60]);
+    uint8_t getHour(uint8_t timeFrame[60]);
+    uint8_t getMinute(uint8_t timeFrame[60]);
+    uint8_t getSecond();
+    tmElements_t getTimeElements(uint8_t timeFrame[60]);
+    time_t getTime(uint8_t timeFrame[60]);
     typedef void(*setExternalTime)(time_t t);
     void setSyncListener(setExternalTime syncListener);
   private:
     // not zero-indexed
-    const static int firstDayOfMonth[13];
-    const static int leapYearMonths[13];
-    const static int bcdWeights[10];
-    int atobcd(int arr[], int msbIndex, int lsbIndex);
+    const static uint16_t firstDayOfMonth[13];
+    const static uint16_t leapYearMonths[13];
     int timerStart = 0;
-    int timeFrame[60];
-    int sec = 0;
-    int previousBit;
-    int isAligned = LOW;
+    uint8_t timeFrame[60];
+    uint8_t sec = 0;
+    wwvbBit_t previousBit;
+    uint8_t isAligned = LOW;
     setExternalTime syncListener;
     void checkpoint();
-    int isLeapYear(int timeFrame[60]);
-    int leapSecondThisMonth(int timeFrame[60]);
-    int getDstIndicator(int timeFrame[60]);
-    int decodePulseLength(int len);
+    bool isLeapYear(uint8_t timeFrame[60]);
+    bool leapSecondThisMonth(uint8_t timeFrame[60]);
+    daylightSavings_t getDstIndicator(uint8_t timeFrame[60]);
+    uint8_t decodePulseLength(int len);
 };
 
 #endif
