@@ -28,13 +28,13 @@ void WWVB::tock() {
   if (timerStart == 0) {
     return;
   }
-  int pulseLength = millis() - timerStart;
-  int decodedBit = decodePulseLength(pulseLength);
+  uint32_t pulseLength = millis() - timerStart;
+  uint8_t decodedBit = decodePulseLength(pulseLength);
 
   nextBit(decodedBit);
 }
 
-uint8_t WWVB::decodePulseLength(int len) {
+uint8_t WWVB::decodePulseLength(uint32_t len) {
   if (len >= 50 && len < 350) {
     return LOW;
   } else if (len >= 350 && len < 650) {

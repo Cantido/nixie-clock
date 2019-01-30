@@ -30,7 +30,7 @@ class WWVB {
     // not zero-indexed
     const static uint16_t firstDayOfMonth[13];
     const static uint16_t leapYearMonths[13];
-    int timerStart = 0;
+    uint32_t timerStart = 0;
     uint8_t timeFrame[60];
     uint8_t sec = 0;
     uint8_t previousBit;
@@ -40,7 +40,7 @@ class WWVB {
     bool isLeapYear(uint8_t timeFrame[60]);
     bool leapSecondThisMonth(uint8_t timeFrame[60]);
     daylightSavings_t getDstIndicator(uint8_t timeFrame[60]);
-    uint8_t decodePulseLength(int len);
+    uint8_t decodePulseLength(uint32_t len);
 };
 
 #endif
