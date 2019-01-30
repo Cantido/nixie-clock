@@ -32,7 +32,7 @@ class WWVB {
     const static int leapYearMonths[13];
     const static int bcdWeights[10];
     int atobcd(int arr[], int msbIndex, int lsbIndex);
-    int timerStart = 0; 
+    int timerStart = 0;
     int timeFrame[60];
     int sec = 0;
     int previousBit;

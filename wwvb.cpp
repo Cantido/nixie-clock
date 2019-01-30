@@ -9,10 +9,6 @@ const int WWVB::leapYearMonths[13] = {
   -1, 0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335
 };
 
-const int WWVB::bcdWeights[10] = {
-  1, 2, 4, 8, 10, 20, 40, 80, 100, 200
-};
-
 WWVB::WWVB() {
 
 }
@@ -117,28 +113,58 @@ int WWVB::getSecond() {
 }
 
 int WWVB::getMinute(int timeFrame[60]) {
-  return atobcd(timeFrame, 1, 8);
+  int minutes =
+    timeFrame[1] * 40 +
+    timeFrame[2] * 20 +
+    timeFrame[3] * 10 +
+    timeFrame[5] * 8 +
+    timeFrame[6] * 4 +
+    timeFrame[7] * 2 +
+    timeFrame[8] * 1;
+
+  return minutes;
 }
 
 int WWVB::getHour(int timeFrame[60]) {
-  return atobcd(timeFrame, 12, 18);
+  int hours =
+    timeFrame[12] * 20 +
+    timeFrame[13] * 10 +
+    timeFrame[15] * 8 +
+    timeFrame[16] * 4 +
+    timeFrame[17] * 2 +
+    timeFrame[18] * 1;
+
+  return hours;
 }
 
 int WWVB::getDayOfYear(int timeFrame[60]) {
-  return atobcd(timeFrame, 22, 33);
+  int day =
+    timeFrame[22] * 200 +
+    timeFrame[23] * 100 +
+    timeFrame[25] * 80 +
+    timeFrame[26] * 40 +
+    timeFrame[27] * 20 +
+    timeFrame[28] * 10 +
+    timeFrame[30] * 8 +
+    timeFrame[31] * 4 +
+    timeFrame[32] * 2 +
+    timeFrame[33] * 1;
+
+  return day;
 }
 
 int WWVB::getYear(int timeFrame[60]) {
-  return 2000 + atobcd(timeFrame, 45, 53);
-}
+  int year =
+    timeFrame[45] * 80 +
+    timeFrame[46] * 40 +
+    timeFrame[47] * 20 +
+    timeFrame[48] * 10 +
+    timeFrame[50] * 8 +
+    timeFrame[51] * 4 +
+    timeFrame[52] * 2 +
+    timeFrame[53] * 1;
 
-
-int WWVB::atobcd(int arr[], int msbIndex, int lsbIndex) {
-  int result = 0;
-  for(int i = msbIndex; i <= lsbIndex; i++) {
-    result += timeFrame[i] * bcdWeights[lsbIndex - i];
-  }
-  return result;
+  return 2000 + year;
 }
 
 int WWVB::getMonth(int timeFrame[60]) {
@@ -162,9 +188,9 @@ int WWVB::getMonth(int timeFrame[60]) {
 }
 
 int WWVB::getDayOfMonth(int timeFrame[60]) {
-  int m = getMonth(timeFrame); 
+  int m = getMonth(timeFrame);
   int daysBeforeMonth;
-  
+
   if(isLeapYear(timeFrame) == HIGH) {
     daysBeforeMonth = leapYearMonths[m];
   } else {
